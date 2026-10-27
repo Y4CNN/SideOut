@@ -1,0 +1,55 @@
+import { ArrowLeftRight, CircleAlert, Info, TriangleAlert, CircleCheck } from 'lucide-react';
+import { useApp, type ToastKind } from '../../store/useApp';
+import { Button } from './ui';
+
+const TOAST_STYLE: Record<ToastKind, string> = {
+  info: 'bg-surface-2 text-fg border-line',
+  success: 'bg-ok text-black border-ok',
+  warning: 'bg-warn text-black border-warn',
+  error: 'bg-danger text-white border-danger',
+};
+
+const TOAST_ICON = { info: Info, success: CircleCheck, warning: TriangleAlert, error: CircleAlert };
+
+export function Toasts() {
+  const toasts = useApp((s) => s.toasts);
+  if (!toasts.length) return null;
+  return (
+    <div
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] flex flex-col items-center gap-2 px-3 pt-[max(env(safe-area-inset-top),0.5rem)]"
+      aria-live="polite"
+    >
+      {toasts.map((t) => {
+        const Icon = TOAST_ICON[t.kind];
+        return (
+          // Non cliquable : un toucher doit toujours atteindre la zone d'équipe en dessous.
+          <div
+            key={t.id}
+            role="status"
+            className={`animate-sheet flex w-full max-w-md items-start gap-2 rounded-xl border px-3 py-2 text-left text-[15px] font-semibold shadow-xl ${TOAST_STYLE[t.kind]}`}
+          >
+            <Icon className="mt-0.5 size-5 shrink-0" />
+            <span>{t.text}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Alerte plein écran : changement de côté au set décisif. */
+export function BigAlert() {
+  const text = useApp((s) => s.bigAlert);
+  const clear = useApp((s) => s.clearBigAlert);
+  if (!text) return null;
+  return (
+    <div className="animate-fade fixed inset-0 z-[55] flex flex-col items-center justify-center gap-4 bg-ffred p-6 text-center text-white">
+      <ArrowLeftRight className="size-20" strokeWidth={2.5} />
+      <div className="text-4xl font-black uppercase tracking-wide">Changement de côté</div>
+      <div className="max-w-md text-lg font-semibold">{text}</div>
+      <Button variant="secondary" className="min-w-48 !bg-white !text-black" onClick={clear}>
+        OK
+      </Button>
+    </div>
+  );
+}
