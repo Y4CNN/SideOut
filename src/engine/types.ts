@@ -8,7 +8,6 @@ export type Score = Record<TeamId, number>;
 
 export interface Player {
   number: number;
-  name?: string;
   captain?: boolean;
   libero?: boolean;
 }

@@ -14,6 +14,7 @@ import {
 import { playSignal, setSoundEnabled } from '../lib/audio';
 import { HAPTIC, setHapticsEnabled, vibrate } from '../lib/haptics';
 import { load, save } from '../lib/storage';
+import { cleanPlayers } from '../lib/players';
 import { canUndo, initHistory, present, pushAction, undo, undoLabel, type History } from './history';
 
 export type Screen = 'home' | 'setup' | 'game' | 'history';
@@ -26,6 +27,8 @@ export interface Prefs {
   flipView: boolean;
   /** Affiche les positions dans les zones d'équipe. */
   showCourt: boolean;
+  highVisibility: boolean;
+  onboardingDone: boolean;
 }
 
 export interface SetupDraft {
@@ -44,6 +47,7 @@ export interface Toast {
   id: number;
   kind: ToastKind;
   text: string;
+  undoAction?: Action;
 }
 
 const KEYS = {
@@ -51,11 +55,12 @@ const KEYS = {
   draft: 'va:draft',
   prefs: 'va:prefs',
   archive: 'va:archive',
+  favorites: 'va:favorites',
 } as const;
 
 const ARCHIVE_SIZE = 20;
 
-const DEFAULT_PREFS: Prefs = { theme: 'dark', sound: true, haptics: true, flipView: false, showCourt: false };
+const DEFAULT_PREFS: Prefs = { theme: 'dark', sound: false, haptics: true, flipView: false, showCourt: false, highVisibility: false, onboardingDone: false };
 
 export function defaultDraft(): SetupDraft {
   return {
@@ -89,6 +94,7 @@ interface AppState {
   draft: SetupDraft;
   prefs: Prefs;
   archive: ArchivedMatch[];
+  favorites: Team[];
   toasts: Toast[];
   /** Message d'alerte plein écran (changement de côté). */
   bigAlert: string | null;
@@ -97,7 +103,9 @@ interface AppState {
   setScreen: (s: Screen) => void;
   setDraft: (fn: (d: SetupDraft) => SetupDraft) => void;
   setPrefs: (p: Partial<Prefs>) => void;
-  toast: (kind: ToastKind, text: string) => void;
+  toast: (kind: ToastKind, text: string, undoAction?: Action) => void;
+  saveFavorite: (team: Team) => void;
+  removeFavorite: (name: string) => void;
   dismissToast: (id: number) => void;
   clearBigAlert: () => void;
   dispatch: (a: ActionInput, opts?: { silent?: boolean }) => boolean;
@@ -154,6 +162,7 @@ export const useApp = create<AppState>((set, get) => ({
   draft: load<SetupDraft>(KEYS.draft, defaultDraft()),
   prefs: initialPrefs,
   archive: load<ArchivedMatch[]>(KEYS.archive, []),
+  favorites: load<Team[]>(KEYS.favorites, []),
   toasts: [],
   bigAlert: null,
   viewingArchive: null,
@@ -166,10 +175,16 @@ export const useApp = create<AppState>((set, get) => ({
     setHapticsEnabled(prefs.haptics);
     set({ prefs });
   },
-  toast: (kind, text) => {
+  saveFavorite: (team) => {
+    const clean = { ...team, name: team.name.trim(), players: cleanPlayers(team.players) };
+    set({ favorites: [...get().favorites.filter(t => t.name !== clean.name), clean].slice(-20) });
+    get().toast('success', `${clean.name} : effectif enregistré.`);
+  },
+  removeFavorite: (name) => set({ favorites: get().favorites.filter(t => t.name !== name) }),
+  toast: (kind, text, undoAction) => {
     const id = ++toastId;
-    set({ toasts: [...get().toasts.slice(-1), { id, kind, text }] });
-    const ms = kind === 'error' || kind === 'warning' ? 5000 : 3000;
+    set({ toasts: [...get().toasts.slice(-1), { id, kind, text, undoAction }] });
+    const ms = undoAction || kind === 'error' || kind === 'warning' ? 6000 : 3500;
     setTimeout(() => get().dismissToast(id), ms);
   },
   dismissToast: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
@@ -189,6 +204,10 @@ export const useApp = create<AppState>((set, get) => ({
     set({ history: r.history, match: present(r.history) });
     if (input.type === 'POINT') vibrate(HAPTIC.tap);
     feedback(r.alerts, get, set);
+    if (!opts?.silent && !['TIMER_STOP', 'START_SET', 'SET_LINEUP', 'TOSS'].includes(input.type)) {
+      const action = r.history.actions.at(-1)!;
+      get().toast('info', input.type === 'POINT' ? `Point ${get().match!.teams[input.team].name}` : (undoLabel(r.history) ?? 'Action enregistrée'), action);
+    }
     return true;
   },
 
@@ -224,7 +243,7 @@ export const useApp = create<AppState>((set, get) => ({
       ...t,
       name: (t.name.trim() || fallback).trim(),
       players: [...t.players]
-        .map((p) => ({ ...p, name: undefined }))
+        .map((p) => cleanPlayers([p])[0])
         .sort((a, b) => a.number - b.number),
     });
     const at = Date.now();
@@ -259,4 +278,5 @@ useApp.subscribe((s, prev) => {
   if (s.draft !== prev.draft) save(KEYS.draft, s.draft);
   if (s.prefs !== prev.prefs) save(KEYS.prefs, s.prefs);
   if (s.archive !== prev.archive) save(KEYS.archive, s.archive);
+  if (s.favorites !== prev.favorites) save(KEYS.favorites, s.favorites);
 });

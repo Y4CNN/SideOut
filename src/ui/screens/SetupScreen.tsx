@@ -1,9 +1,11 @@
-import { ChevronLeft, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
-import { PRESETS, presetConfig, validateTeam, type MatchConfig, type Player, type Team, type TeamId } from '../../engine';
-import { TEAM_PALETTE, softOn, textOn } from '../../lib/color';
+import { PRESETS, presetConfig, validateTeam, type MatchConfig, type Team, type TeamId } from '../../engine';
+import { TEAM_PALETTE, softOn, textOn, teamColorsConfusable } from '../../lib/color';
 import { useApp } from '../../store/useApp';
 import { Button, Card, IconButton, Segmented, Stepper, Toggle } from '../components/ui';
+
+import { PlayerRoster } from '../components/PlayerRoster';
 
 type Tab = 'config' | TeamId;
 
@@ -46,6 +48,8 @@ export function SetupScreen() {
           ]}
         />
       </div>
+      <p className="px-safe py-2 text-sm font-semibold text-muted" role="status">Étape {tab === 'A' ? 1 : tab === 'B' ? 2 : 3} sur 3</p>
+      {teamColorsConfusable(draft.teams.A.color, draft.teams.B.color) && <p role="status" className="px-safe py-2 text-sm text-warn">Ces couleurs peuvent se confondre. Essayez bleu #0072B2 et orange #E69F00. Les noms identifient toujours les équipes.</p>}
       <main className="scroll-area min-h-0 flex-1 px-safe py-3">
         <div className="mx-auto flex max-w-2xl flex-col gap-3">
           {tab === 'config' ? (
@@ -63,9 +67,12 @@ export function SetupScreen() {
             ))}
           </ul>
         )}
-        <Button variant="red" className="w-full text-lg" onClick={submit}>
-          Valider · tirage au sort
-        </Button>
+        <div className="flex gap-2">
+          {tab !== 'A' && <Button onClick={() => setTab(tab === 'config' ? 'B' : 'A')}>Précédent</Button>}
+          <Button variant="red" className="flex-1 text-lg" onClick={() => tab === 'config' ? submit() : setTab(tab === 'A' ? 'B' : 'config')}>
+            {tab === 'config' ? 'Valider · tirage au sort' : 'Suivant'}
+          </Button>
+        </div>
       </footer>
     </div>
   );
@@ -263,12 +270,12 @@ function ColorPicker({ value, onChange, label }: { value: string; onChange: (c: 
             aria-label={c.name}
             title={c.name}
             onClick={() => onChange(c.value)}
-            className={`tap size-11 rounded-full border-2 ${value.toUpperCase() === c.value ? 'border-accent ring-2 ring-accent ring-offset-2 ring-offset-surface' : 'border-line'}`}
+            className={`tap size-12 rounded-full border-2 ${value.toUpperCase() === c.value ? 'border-accent ring-2 ring-accent ring-offset-2 ring-offset-surface' : 'border-line'}`}
             style={{ background: c.value }}
           />
         ))}
         <label
-          className="tap relative flex size-11 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-line text-xs font-bold"
+          className="tap relative flex size-12 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-line text-xs font-bold"
           title="Couleur libre"
         >
           <span aria-hidden>+</span>
@@ -277,7 +284,7 @@ function ColorPicker({ value, onChange, label }: { value: string; onChange: (c: 
             aria-label="Couleur libre"
             value={value}
             onChange={(e) => onChange(e.target.value.toUpperCase())}
-            className="absolute inset-0 size-full cursor-pointer opacity-0"
+            className="absolute -inset-0.5 min-h-12 min-w-12 cursor-pointer opacity-0"
           />
         </label>
       </div>
@@ -287,14 +294,6 @@ function ColorPicker({ value, onChange, label }: { value: string; onChange: (c: 
 
 function TeamEditor({ team, config, onChange }: { team: Team; config: MatchConfig; onChange: (fn: (t: Team) => Team) => void }) {
   const errors = validateTeam(team, config);
-  const players = team.players;
-  const setPlayer = (i: number, patch: Partial<Player>) =>
-    onChange((t) => ({ ...t, players: t.players.map((p, j) => (j === i ? { ...p, ...patch } : p)) }));
-  const nextNumber = () => {
-    for (let n = 1; n <= 99; n++) if (!players.some((p) => p.number === n)) return n;
-    return 0;
-  };
-  const libs = players.filter((p) => p.libero).length;
 
   return (
     <>
@@ -337,94 +336,8 @@ function TeamEditor({ team, config, onChange }: { team: Team; config: MatchConfi
         </div>
       </Card>
 
-      <Card
-        title={
-          <>
-            Joueurs <span className="font-medium text-muted">({players.length}{libs ? `, dont ${libs} libéro${libs > 1 ? 's' : ''}` : ''})</span>
-          </>
-        }
-      >
-        {players.length === 0 && (
-          <Button
-            variant="primary"
-            className="mb-3 w-full"
-            onClick={() =>
-              onChange((t) => ({ ...t, players: Array.from({ length: 12 }, (_, i) => ({ number: i + 1 })) }))
-            }
-          >
-            Créer les n° 1 à 12
-          </Button>
-        )}
-        <div className="mb-1 grid grid-cols-[4rem_1fr_2.75rem_2.75rem_2.75rem] gap-1.5 px-0.5 text-xs font-semibold text-muted">
-          <span>N°</span>
-          <span />
-          <span className="text-center">Cap.</span>
-          <span className="text-center">Lib.</span>
-          <span />
-        </div>
-        <ul className="flex flex-col gap-1.5">
-          {players.map((p, i) => (
-            <li key={i} className="grid grid-cols-[4rem_1fr_2.75rem_2.75rem_2.75rem] items-center gap-1.5">
-              <input
-                inputMode="numeric"
-                pattern="[0-9]*"
-                aria-label="Numéro de maillot"
-                value={p.number || ''}
-                onChange={(e) => {
-                  const n = parseInt(e.target.value.replace(/\D/g, '').slice(0, 2), 10);
-                  setPlayer(i, { number: Number.isNaN(n) ? 0 : n });
-                }}
-                className="tabular min-h-11 w-full rounded-xl border border-line bg-surface-2 text-center text-lg font-bold"
-              />
-              <div />
-              <button
-                type="button"
-                aria-label="Capitaine"
-                aria-pressed={!!p.captain}
-                onClick={() =>
-                  onChange((t) => ({
-                    ...t,
-                    players: t.players.map((q, j) => ({ ...q, captain: j === i ? !q.captain : false })),
-                  }))
-                }
-                className={`tap min-h-11 rounded-xl border font-black ${p.captain ? 'border-navy-400 bg-navy text-white' : 'border-line text-muted'}`}
-              >
-                C
-              </button>
-              <button
-                type="button"
-                aria-label="Libéro"
-                aria-pressed={!!p.libero}
-                onClick={() => setPlayer(i, { libero: !p.libero })}
-                className={`tap min-h-11 rounded-xl border font-black ${p.libero ? 'border-yellow-500 bg-[#FFD200] text-black' : 'border-line text-muted'}`}
-              >
-                L
-              </button>
-              <IconButton
-                label="Supprimer le joueur"
-                className="text-muted"
-                onClick={() => onChange((t) => ({ ...t, players: t.players.filter((_, j) => j !== i) }))}
-              >
-                <Trash2 className="size-5" />
-              </IconButton>
-            </li>
-          ))}
-        </ul>
-        <Button
-          className="mt-3 w-full"
-          disabled={players.length >= 30}
-          onClick={() => onChange((t) => ({ ...t, players: [...t.players, { number: nextNumber() }] }))}
-        >
-          <Plus /> Ajouter un joueur
-        </Button>
-        {errors.length > 0 && (
-          <ul className="mt-3 list-disc pl-5 text-sm text-warn">
-            {errors.map((e) => (
-              <li key={e}>{e}</li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      <PlayerRoster team={team} config={config} onChange={onChange} />
+      {errors.length > 0 && <ul className="list-disc pl-5 text-sm text-warn">{errors.map(e => <li key={e}>{e}</li>)}</ul>}
     </>
   );
 }

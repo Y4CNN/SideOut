@@ -1,4 +1,5 @@
 import { SANCTION_LABELS, targetLabel } from './reducer';
+import { migratePlayers } from '../lib/players';
 import { regularSubsUsed } from './substitutions';
 import { setDurationMs, setsWon } from './selectors';
 import type { MatchState, SanctionRecord, Score, SetEndReason, TeamId } from './types';
@@ -120,6 +121,7 @@ export function summaryText(state: MatchState, now = Date.now()): string {
 }
 
 export function summaryJson(state: MatchState): string {
+  state = migratePlayers(state);
   return JSON.stringify(
     {
       format: 'arbitre-volley/match',

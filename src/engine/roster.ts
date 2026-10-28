@@ -39,9 +39,8 @@ export function ableLiberos(state: MatchState, team: TeamId): number[] {
   return liberos(state, team).filter((n) => unavailability(state, team, n) === null);
 }
 
-export function playerLabel(state: MatchState, team: TeamId, n: number): string {
-  const p = findPlayer(state, team, n);
-  return p?.name ? `n°${n} (${p.name})` : `n°${n}`;
+export function playerLabel(_state: MatchState, _team: TeamId, n: number): string {
+  return `n°${n}`;
 }
 
 /** Validation de l'effectif saisi lors de la préparation du match. */

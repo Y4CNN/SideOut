@@ -121,7 +121,7 @@ export function SubstitutionSheet({
                 >
                   <span className="tabular text-xl leading-none">{c.number}</span>
                   <span className="max-w-full truncate px-1 text-[11px] font-semibold text-muted">
-                    {p?.libero ? 'Libéro' : (p?.name ?? '')}
+                    {p?.libero ? 'Libéro' : ''}
                   </span>
                 </button>
               );
