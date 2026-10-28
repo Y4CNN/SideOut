@@ -44,7 +44,7 @@ describe('migration des anciens effectifs', () => {
     expect(cleanPlayers(null)).toEqual([]);
   });
   it('retire les identités des exports sans modifier le match en mémoire', () => {
-    const team = legacy.teams.A;
+    const team = { ...legacy.teams.A, color: '#0A2A66' };
     const match = createMatch(FFVB_6X6, {A:team, B:{...team,name:'Paris'}}, 1000);
     match.events.push({id:2,at:1001,set:null,score:null,type:'substitution',text:'n°7 (Jean Dupont) entre.'});
     const before = structuredClone(match);

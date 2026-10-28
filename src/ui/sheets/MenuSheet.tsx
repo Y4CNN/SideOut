@@ -80,6 +80,7 @@ export function MenuSheet({ match, onClose, onOpenLog }: { match: MatchState; on
 
       <h3 className="mt-4 mb-1 font-bold">Affichage et retours</h3>
       <Toggle label="Mode sombre" checked={prefs.theme === 'dark'} onChange={(v) => setPrefs({ theme: v ? 'dark' : 'light' })} />
+      <Toggle label="Haute visibilité" checked={prefs.highVisibility} onChange={(v) => setPrefs({ highVisibility: v })} />
       <Toggle label="Sons" hint="Fin de chrono, alertes" checked={prefs.sound} onChange={(v) => setPrefs({ sound: v })} />
       <Toggle label="Vibrations" hint="Android uniquement" checked={prefs.haptics} onChange={(v) => setPrefs({ haptics: v })} />
       <Toggle label="Positions dans les zones d'équipe" checked={prefs.showCourt} onChange={(v) => setPrefs({ showCourt: v })} />

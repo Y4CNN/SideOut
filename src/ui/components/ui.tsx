@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { useEffect, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { softOn, textOn } from '../../lib/color';
 
 type Variant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'red';
@@ -62,11 +62,6 @@ export function Sheet({
   footer?: ReactNode;
   wide?: boolean;
 }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center" role="dialog" aria-modal="true">
       <div className="animate-fade absolute inset-0 bg-black/60" onClick={onClose} />
@@ -221,13 +216,12 @@ export function Segmented<T extends string | number>({
   className?: string;
 }) {
   return (
-    <div className={`flex rounded-xl border border-line bg-surface-2 p-1 ${className}`} role="radiogroup">
+    <div className={`flex flex-wrap rounded-xl border border-line bg-surface-2 p-1 ${className}`} role="group">
       {options.map((o) => (
         <button
           key={String(o.value)}
           type="button"
-          role="radio"
-          aria-checked={o.value === value}
+          aria-pressed={o.value === value}
           onClick={() => onChange(o.value)}
           className={`tap min-h-10 flex-1 rounded-lg px-3 text-sm font-semibold transition-colors ${
             o.value === value ? 'bg-navy text-white shadow' : 'text-muted'
@@ -272,7 +266,7 @@ export function TeamButton({
       onClick={onClick}
       aria-pressed={selected}
       className={`tap flex min-h-14 flex-1 flex-col items-center justify-center rounded-xl px-3 py-2 font-bold transition-[outline,opacity] ${
-        selected ? 'outline-4 outline-offset-2 outline-accent' : 'opacity-60'
+        selected ? 'outline-4 outline-offset-2 outline-accent' : ''
       }`}
       style={{ background: color, color: textOn(color), boxShadow: `inset 0 0 0 1px ${softOn(color, 0.35)}` }}
     >

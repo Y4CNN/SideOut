@@ -1,6 +1,10 @@
 /** Couleurs d'équipe et contraste automatique du texte (WCAG). */
 
 export const TEAM_PALETTE = [
+  { name: 'Bleu accessible', value: '#0072B2' },
+  { name: 'Orange accessible', value: '#E69F00' },
+  { name: 'Vert bleuté', value: '#009E73' },
+  { name: 'Pourpre', value: '#CC79A7' },
   { name: 'Bleu marine', value: '#0A2A66' },
   { name: 'Rouge', value: '#E30613' },
   { name: 'Blanc', value: '#FFFFFF' },
@@ -14,6 +18,19 @@ export const TEAM_PALETTE = [
   { name: 'Bordeaux', value: '#7A1029' },
   { name: 'Gris', value: '#6B7280' },
 ];
+
+/** Conservative distance under normal, protan, deutan and tritan approximations.
+ * This warning is guidance, not a diagnosis; team names remain the identifier. */
+export function teamColorsConfusable(a: string, b: string): boolean {
+  const transforms = [
+    [[1,0,0],[0,1,0],[0,0,1]],
+    [[0.567,0.433,0],[0.558,0.442,0],[0,0.242,0.758]],
+    [[0.625,0.375,0],[0.7,0.3,0],[0,0.3,0.7]],
+    [[0.95,0.05,0],[0,0.433,0.567],[0,0.475,0.525]],
+  ];
+  const x = parseHex(a), y = parseHex(b);
+  return transforms.some(m => Math.hypot(...m.map(row => row.reduce((s,c,i) => s + c*(x[i]-y[i]), 0))) < 75);
+}
 
 function parseHex(hex: string): [number, number, number] {
   let h = hex.replace('#', '').trim();
@@ -37,9 +54,9 @@ export function contrastRatio(a: string, b: string): number {
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
-/** Couleur de texte (blanc ou quasi-noir) offrant le meilleur contraste. */
+/** Le noir pur garantit un contraste ≥ 4,5 pour toute couleur sRGB opaque. */
 export function textOn(bg: string): string {
-  return contrastRatio(bg, '#FFFFFF') >= contrastRatio(bg, '#0B0B0B') ? '#FFFFFF' : '#0B0B0B';
+  return contrastRatio(bg, '#FFFFFF') >= contrastRatio(bg, '#000000') ? '#FFFFFF' : '#000000';
 }
 
 /** Couleur translucide du texte pour les éléments secondaires. */

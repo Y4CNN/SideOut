@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@source not '../reports';
+@source not '../scripts';
 
 @font-face { font-family: Inter; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/inter-400.woff2') format('woff2'); }
 @font-face { font-family: Inter; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/inter-600.woff2') format('woff2'); }
@@ -38,7 +40,7 @@
   --app-surface-2: #e3e8f2;
   --app-fg: #0b1530;
   --app-muted: #4a5675;
-  --app-line: #c5cde0;
+  --app-line: #7b87a0;
   --app-accent: #0a2a66;
   --app-ok: #0f7a3a;
   --app-warn: #874400;
@@ -52,7 +54,7 @@
   --app-surface-2: #13264d;
   --app-fg: #f2f5fb;
   --app-muted: #a4b1cf;
-  --app-line: #253a68;
+  --app-line: #62789e;
   --app-accent: #6f9bff;
   --app-ok: #3ddc84;
   --app-warn: #ffb547;

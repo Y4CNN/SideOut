@@ -1,5 +1,5 @@
 import { Ellipsis, Eye, LayoutGrid, Menu, ScrollText, Undo2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   leftTeam as leftTeamOf,
   liberoMustLeave,
@@ -11,7 +11,7 @@ import {
   type MatchState,
   type TeamId,
 } from '../../engine';
-import { softOn, teamStyle } from '../../lib/color';
+import { teamStyle } from '../../lib/color';
 import { useApp } from '../../store/useApp';
 import { HalfCourt } from '../components/HalfCourt';
 import { formatElapsed, useNow } from '../hooks';
@@ -43,15 +43,8 @@ export function MatchScreen({ match }: { match: MatchState }) {
   const now = useNow(true, 1000);
   const close = () => setSheet(null);
 
-  // Pendant le jeu, bloque le zoom par pincement (iOS) pour éviter les zooms accidentels.
-  useEffect(() => {
-    const block = (e: Event) => e.preventDefault();
-    document.addEventListener('gesturestart', block);
-    return () => document.removeEventListener('gesturestart', block);
-  }, []);
-
   return (
-    <div className="flex h-full min-h-0 flex-col bg-black">
+    <div className="match-screen flex h-full min-h-0 flex-col bg-black">
       {/* barre du haut */}
       <header className="flex items-center gap-1 bg-surface pt-safe pl-safe pr-safe text-fg">
         <button type="button" onClick={() => setSheet({ kind: 'menu' })} className="tap flex size-11 items-center justify-center" aria-label="Menu">
@@ -59,7 +52,7 @@ export function MatchScreen({ match }: { match: MatchState }) {
         </button>
         <div className="flex min-w-0 flex-1 items-center justify-center gap-2 text-sm font-bold sm:text-base">
           <span className="rounded-md bg-navy px-2 py-0.5 text-white">Set {set.number}</span>
-          <span className="tabular" aria-label={`Sets : ${won[left]} à ${won[other(left)]}`}>
+          <span className="tabular">
             Sets {won[left]}–{won[other(left)]}
           </span>
           <span className="tabular text-muted">{formatElapsed(now - set.startedAt)}</span>
@@ -70,11 +63,11 @@ export function MatchScreen({ match }: { match: MatchState }) {
       </header>
 
       {/* zones des équipes */}
-      <div className="relative flex min-h-0 flex-1 portrait:flex-col">
+      <main className="match-scoreboard relative flex min-h-0 flex-1 portrait:flex-col" aria-label="Score et commandes du match">
         <TeamPanel match={match} team={left} side="left" openSheet={setSheet} />
         <div className="z-10 bg-white/90 shadow-[0_0_8px_rgba(0,0,0,.6)] landscape:w-1 portrait:h-1" aria-hidden />
         <TeamPanel match={match} team={other(left)} side="right" openSheet={setSheet} />
-      </div>
+      </main>
 
       {/* barre du bas */}
       <nav className="flex items-stretch gap-1 bg-surface sm:gap-1.5 px-safe pt-1.5 pb-[max(env(safe-area-inset-bottom),0.375rem)] text-fg">
@@ -161,8 +154,9 @@ function TeamPanel({
   const set = match.sets[match.sets.length - 1];
   const ts = set.teams[team];
   const info = match.teams[team];
-  const style = teamStyle(info.color);
-  const soft = softOn(info.color, 0.16);
+  const displayColor = prefs.highVisibility ? (prefs.theme === 'dark' ? '#000000' : '#FFFFFF') : info.color;
+  const style = teamStyle(displayColor);
+  const soft = style.color === '#FFFFFF' ? 'rgba(0,0,0,0.16)' : 'rgba(255,255,255,0.16)';
   const serving = set.serving === team;
   const server = serving ? ts.court[0] : null;
   const score = set.score[team];
@@ -178,7 +172,7 @@ function TeamPanel({
   const scoreEl = (
     <span
       key={score}
-      className={`animate-pop tabular block leading-none font-black tracking-tighter ${
+      className={`score-digits animate-pop tabular block leading-none font-black tracking-tighter ${
         showCourt
           ? 'text-[min(28vh,13vw)] portrait:text-[min(13vh,26vw)]'
           : 'text-[min(44vh,21vw)] portrait:text-[min(21vh,44vw)]'
@@ -198,7 +192,7 @@ function TeamPanel({
     >
       <div className={`flex items-center gap-2 px-3 pt-1.5 ${side === 'right' ? 'flex-row-reverse text-right' : ''}`}>
         <span className="min-w-0 flex-1 truncate text-lg font-black sm:text-xl">{info.name}</span>
-        <span className="flex gap-1" aria-label={`${won} set(s) gagné(s)`}>
+        <span className="flex gap-1" role="img" aria-label={`${won} set(s) gagné(s)`}>
           {Array.from({ length: match.config.setsToWin }, (_, i) => (
             <span
               key={i}
@@ -222,7 +216,7 @@ function TeamPanel({
               court={ts.court}
               orientation={side}
               flip={prefs.flipView}
-              color={info.color}
+              color={displayColor}
               libero={ts.libero?.libero}
               server={server}
               onTeamColor
@@ -236,7 +230,7 @@ function TeamPanel({
         {serving && (
           <span
             className={`absolute top-1 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-bold ${side === 'left' ? 'left-2' : 'right-2'}`}
-            style={{ background: style.color, color: info.color }}
+            style={{ background: style.color, color: displayColor }}
           >
             <ServeBall seam={style.color} /> Service n°{server}
           </span>
@@ -274,7 +268,7 @@ function TeamPanel({
           onClick={() => dispatch({ type: 'TIMEOUT', team })}
           label="Temps mort"
           value={
-            <span className="flex gap-1" aria-label={`${ts.timeouts} sur ${tmMax}`}>
+            <span className="flex gap-1" role="img" aria-label={`${ts.timeouts} sur ${tmMax}`}>
               {Array.from({ length: tmMax }, (_, i) => (
                 <span key={i} className="size-2.5 rounded-full border-2 border-current" style={{ background: i < ts.timeouts ? 'currentColor' : 'transparent' }} />
               ))}
@@ -330,7 +324,7 @@ function PanelButton({
       className="tap flex min-h-12 min-w-0 flex-col items-center justify-center rounded-xl px-1 py-1 leading-tight font-bold active:brightness-90 disabled:opacity-40"
       style={{ background: soft }}
     >
-      <span className="truncate text-xs font-semibold opacity-90 sm:text-sm">{short}</span>
+      <span className="truncate text-xs font-semibold sm:text-sm">{short}</span>
       <span className="text-base">{value}</span>
     </button>
   );

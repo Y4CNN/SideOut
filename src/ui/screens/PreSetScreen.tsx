@@ -276,7 +276,7 @@ function LineupEditor({
     <section className="overflow-hidden rounded-2xl border border-line bg-surface">
       <div className="flex items-center gap-2 px-4 py-2" style={{ background: info.color, color: textOn(info.color) }}>
         <h3 className="min-w-0 flex-1 truncate text-lg font-black">{info.name}</h3>
-        <span className="text-sm font-semibold opacity-80">Feuille de position</span>
+        <span className="text-sm font-semibold">Feuille de position</span>
       </div>
       <div className="p-3">
         <div className="mx-auto max-w-72 landscape:max-w-56">

@@ -62,20 +62,21 @@ export function TimerOverlay() {
     <div
       className="animate-fade fixed inset-0 z-50 flex flex-col pt-safe pb-safe pl-safe pr-safe"
       style={done ? { background: '#E30613', color: '#fff' } : warning ? { background: '#0B0B0B', color: '#FFB547' } : style}
-      role="timer"
-      aria-live="assertive"
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
     >
       <div className="flex flex-wrap items-center justify-center gap-x-3 px-4 pt-3 text-center text-xl font-bold landscape:pt-2">
         <span className="uppercase tracking-wide">{title}</span>
         {team && (
-          <span className="opacity-90">
+          <span>
             {team.name}
             {used !== null && ` · ${used}/${match.config.timeoutsPerSet}`}
           </span>
         )}
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center">
-        <span className="tabular text-[min(52vh,60vw)] leading-none font-black landscape:text-[min(62vh,40vw)]">
+        <span role="timer" aria-live="off" className="tabular text-[min(52vh,60vw)] leading-none font-black landscape:text-[min(62vh,40vw)]">
           {done ? '0' : formatCountdown(remaining)}
         </span>
       </div>
@@ -83,13 +84,14 @@ export function TimerOverlay() {
         <div className="h-full bg-current transition-[width] duration-200" style={{ width: `${progress * 100}%` }} />
       </div>
       <div className="flex items-center justify-center gap-3 p-4">
+        <span className="sr-only" role="status" aria-live="assertive">{done ? 'Fin du temps mort. Reprise du jeu.' : ''}</span>
         {done ? (
           <span className="text-2xl font-black uppercase">Temps écoulé — reprise du jeu</span>
         ) : (
           <>
             <Button
               variant="secondary"
-              className="min-w-48 !border-black/20 !bg-black/25 text-lg !text-current"
+              className="min-w-48 !border-black/20 !bg-white text-lg !text-black"
               onClick={() => dispatch({ type: 'TIMER_STOP' })}
             >
               Arrêter le chrono

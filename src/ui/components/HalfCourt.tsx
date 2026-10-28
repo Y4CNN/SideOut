@@ -91,8 +91,8 @@ export function HalfCourt({
   const width = cols * CELL + (vertical ? NET : 0);
   const height = rows * CELL + (vertical ? 0 : NET);
   const fg = onTeamColor ? textOn(color) : 'currentColor';
-  const cellFill = onTeamColor ? softOn(color, 0.16) : color;
-  const cellText = onTeamColor ? textOn(color) : textOn(color);
+  const cellFill = onTeamColor ? (textOn(color) === '#FFFFFF' ? 'rgba(0,0,0,0.16)' : 'rgba(255,255,255,0.16)') : color;
+  const cellText = textOn(color);
 
   const inset = showConstraints ? 13 : 5;
   const center = (i: number) => {
@@ -120,7 +120,7 @@ export function HalfCourt({
     <svg
       viewBox={`0 0 ${width} ${height}`}
       className={`block select-none ${className}`}
-      role="img"
+      role={onCellClick ? 'group' : 'img'}
       aria-label={label ?? 'Positions sur le terrain'}
     >
       <rect x={net.x} y={net.y} width={net.w} height={net.h} rx={3} fill={fg} opacity={0.85} />
@@ -167,7 +167,7 @@ export function HalfCourt({
               stroke={isAlert ? '#ff5a63' : isSel ? '#6f9bff' : onTeamColor ? softOn(color, 0.4) : softOn(color, 0.5)}
               strokeWidth={isAlert || isSel ? 7 : 2}
             />
-            <text x={x + inset + 8} y={y + inset + 21} fontSize={showConstraints ? 15 : 17} fontWeight={700} fill={txt} opacity={0.75}>
+            <text x={x + inset + 8} y={y + inset + 21} fontSize={showConstraints ? 15 : 17} fontWeight={700} fill={txt}>
               {positionLabel(i)}
             </text>
             {isLib && (
@@ -202,7 +202,7 @@ export function HalfCourt({
             tabIndex={0}
             aria-label={`Position ${positionLabel(i)}${n ? ` : n°${n}` : ' : vide'}`}
             onClick={() => onCellClick(i)}
-            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onCellClick(i)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCellClick(i); } }}
             style={{ cursor: 'pointer' }}
           >
             {inner}
