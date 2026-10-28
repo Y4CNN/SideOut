@@ -71,7 +71,7 @@ export function PreSetScreen({ match }: { match: MatchState }) {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <header className="flex items-center gap-1 border-b border-line bg-surface pt-safe px-safe">
         <IconButton label="Menu" onClick={() => setMenu(true)}>
           <Menu />

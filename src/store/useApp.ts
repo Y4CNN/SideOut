@@ -213,20 +213,22 @@ export const useApp = create<AppState>((set, get) => ({
 
   startMatch: () => {
     const { draft } = get();
-    const errors = [...validateTeam(draft.teams.A, draft.config), ...validateTeam(draft.teams.B, draft.config)];
-    if (draft.teams.A.name.trim() && draft.teams.A.name.trim() === draft.teams.B.name.trim()) {
+    const nameA = draft.teams.A.name.trim() || 'Équipe A';
+    const nameB = draft.teams.B.name.trim() || 'Équipe B';
+    const errors = [...validateTeam({ ...draft.teams.A, name: nameA }, draft.config), ...validateTeam({ ...draft.teams.B, name: nameB }, draft.config)];
+    if (nameA === nameB) {
       errors.push('Les deux équipes doivent avoir des noms différents.');
     }
     if (errors.length) return errors;
-    const clean = (t: Team): Team => ({
+    const clean = (t: Team, fallback: string): Team => ({
       ...t,
-      name: t.name.trim(),
+      name: (t.name.trim() || fallback).trim(),
       players: [...t.players]
-        .map((p) => ({ ...p, name: p.name?.trim() || undefined }))
+        .map((p) => ({ ...p, name: undefined }))
         .sort((a, b) => a.number - b.number),
     });
     const at = Date.now();
-    const base = createMatch(draft.config, { A: clean(draft.teams.A), B: clean(draft.teams.B) }, at, `m-${at}`);
+    const base = createMatch(draft.config, { A: clean(draft.teams.A, nameA), B: clean(draft.teams.B, nameB) }, at, `m-${at}`);
     const history = initHistory(base);
     set({ history, match: base, screen: 'game' });
     return [];

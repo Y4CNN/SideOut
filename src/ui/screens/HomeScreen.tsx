@@ -25,7 +25,7 @@ export function HomeScreen() {
   };
 
   return (
-    <div className="scroll-area flex h-full flex-col pt-safe pb-safe px-safe">
+    <div className="scroll-area flex h-full min-h-0 flex-col pt-safe pb-safe px-safe">
       <div className="flex items-center justify-end pt-2">
         <IconButton
           label={prefs.theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}

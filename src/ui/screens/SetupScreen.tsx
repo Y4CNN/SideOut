@@ -28,7 +28,7 @@ export function SetupScreen() {
   const teamErrors = (id: TeamId) => validateTeam(draft.teams[id], draft.config).length;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <header className="flex items-center gap-1 border-b border-line bg-surface pt-safe px-safe">
         <IconButton label="Retour à l'accueil" onClick={() => setScreen('home')}>
           <ChevronLeft />
@@ -355,16 +355,16 @@ function TeamEditor({ team, config, onChange }: { team: Team; config: MatchConfi
             Créer les n° 1 à 12
           </Button>
         )}
-        <div className="mb-1 grid grid-cols-[4rem_1fr_3rem_3rem_3rem] gap-1.5 px-0.5 text-xs font-semibold text-muted">
+        <div className="mb-1 grid grid-cols-[4rem_1fr_2.75rem_2.75rem_2.75rem] gap-1.5 px-0.5 text-xs font-semibold text-muted">
           <span>N°</span>
-          <span>Nom (facultatif)</span>
+          <span />
           <span className="text-center">Cap.</span>
           <span className="text-center">Lib.</span>
           <span />
         </div>
         <ul className="flex flex-col gap-1.5">
           {players.map((p, i) => (
-            <li key={i} className="grid grid-cols-[4rem_1fr_3rem_3rem_3rem] items-center gap-1.5">
+            <li key={i} className="grid grid-cols-[4rem_1fr_2.75rem_2.75rem_2.75rem] items-center gap-1.5">
               <input
                 inputMode="numeric"
                 pattern="[0-9]*"
@@ -374,15 +374,9 @@ function TeamEditor({ team, config, onChange }: { team: Team; config: MatchConfi
                   const n = parseInt(e.target.value.replace(/\D/g, '').slice(0, 2), 10);
                   setPlayer(i, { number: Number.isNaN(n) ? 0 : n });
                 }}
-                className="tabular min-h-12 w-full rounded-xl border border-line bg-surface-2 text-center text-lg font-bold"
+                className="tabular min-h-11 w-full rounded-xl border border-line bg-surface-2 text-center text-lg font-bold"
               />
-              <input
-                aria-label="Nom du joueur"
-                value={p.name ?? ''}
-                onChange={(e) => setPlayer(i, { name: e.target.value })}
-                maxLength={24}
-                className="min-h-12 w-full min-w-0 rounded-xl border border-line bg-surface-2 px-3"
-              />
+              <div />
               <button
                 type="button"
                 aria-label="Capitaine"
@@ -393,7 +387,7 @@ function TeamEditor({ team, config, onChange }: { team: Team; config: MatchConfi
                     players: t.players.map((q, j) => ({ ...q, captain: j === i ? !q.captain : false })),
                   }))
                 }
-                className={`tap min-h-12 rounded-xl border font-black ${p.captain ? 'border-navy-400 bg-navy text-white' : 'border-line text-muted'}`}
+                className={`tap min-h-11 rounded-xl border font-black ${p.captain ? 'border-navy-400 bg-navy text-white' : 'border-line text-muted'}`}
               >
                 C
               </button>
@@ -402,7 +396,7 @@ function TeamEditor({ team, config, onChange }: { team: Team; config: MatchConfi
                 aria-label="Libéro"
                 aria-pressed={!!p.libero}
                 onClick={() => setPlayer(i, { libero: !p.libero })}
-                className={`tap min-h-12 rounded-xl border font-black ${p.libero ? 'border-yellow-500 bg-[#FFD200] text-black' : 'border-line text-muted'}`}
+                className={`tap min-h-11 rounded-xl border font-black ${p.libero ? 'border-yellow-500 bg-[#FFD200] text-black' : 'border-line text-muted'}`}
               >
                 L
               </button>

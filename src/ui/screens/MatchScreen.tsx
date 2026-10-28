@@ -51,7 +51,7 @@ export function MatchScreen({ match }: { match: MatchState }) {
   }, []);
 
   return (
-    <div className="flex h-full flex-col bg-black">
+    <div className="flex h-full min-h-0 flex-col bg-black">
       {/* barre du haut */}
       <header className="flex items-center gap-1 bg-surface pt-safe pl-safe pr-safe text-fg">
         <button type="button" onClick={() => setSheet({ kind: 'menu' })} className="tap flex size-11 items-center justify-center" aria-label="Menu">
