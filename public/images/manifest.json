@@ -1,0 +1,83 @@
+{
+  "logo": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "welcome": {
+    "width": 1536,
+    "height": 1024,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "onboarding-score": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "onboarding-rotation": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "onboarding-timeout": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "empty-players": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "empty-matches": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "match-end": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  },
+  "court-pattern": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      320,
+      480,
+      768
+    ]
+  }
+}
