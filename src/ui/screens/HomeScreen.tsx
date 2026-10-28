@@ -1,11 +1,13 @@
-import { History, Moon, Play, Plus, Sun } from 'lucide-react';
+import { History, Moon, Play, Plus, Sun, Settings as SettingsIcon, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import { setsWon } from '../../engine';
 import { useApp } from '../../store/useApp';
 import { Button, ConfirmDialog, IconButton, TeamTag } from '../components/ui';
+import { Artwork } from '../components/Artwork';
+import { Settings } from '../components/Settings';
 
 export function BallLogo({ className = '' }: { className?: string }) {
-  return <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className={className} />;
+  return <Artwork name="logo" eager className={className} sizes="80px" />;
 }
 
 export function HomeScreen() {
@@ -16,6 +18,8 @@ export function HomeScreen() {
   const setScreen = useApp((s) => s.setScreen);
   const closeMatch = useApp((s) => s.closeMatch);
   const [confirmNew, setConfirmNew] = useState(false);
+  const [settings, setSettings] = useState(false);
+  const lastTeams = match?.teams ?? archive[0]?.state.teams;
 
   const won = match ? setsWon(match) : null;
 
@@ -25,26 +29,29 @@ export function HomeScreen() {
   };
 
   return (
-    <div className="scroll-area flex h-full min-h-0 flex-col pt-safe pb-safe px-safe">
-      <div className="flex items-center justify-end pt-2">
+    <main className="home-screen scroll-area flex h-full min-h-0 flex-col pt-safe pb-safe px-safe">
+      <header className="flex items-center justify-between gap-2 py-2">
+        <span className="flex items-center gap-2 text-sm font-extrabold tracking-wide"><BallLogo className="size-12" /> ARBITRE VOLLEY</span>
+        <div className="flex">
+        <IconButton label="Réglages" onClick={() => setSettings(true)}><SettingsIcon /></IconButton>
         <IconButton
           label={prefs.theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
           onClick={() => setPrefs({ theme: prefs.theme === 'dark' ? 'light' : 'dark' })}
         >
           {prefs.theme === 'dark' ? <Sun /> : <Moon />}
         </IconButton>
-      </div>
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 py-4 landscape:max-w-2xl landscape:flex-row landscape:items-center">
-        <div className="flex flex-col items-center gap-3 text-center landscape:flex-1">
-          <BallLogo className="size-24 rounded-3xl shadow-lg landscape:size-20" />
-          <div>
-            <h1 className="text-3xl font-black tracking-tight">
-              Arbitre <span className="text-ffred">Volley</span>
-            </h1>
-            <p className="mt-1 text-muted">Feuille de match de poche · règles FIVB 2025‑2028</p>
-          </div>
         </div>
-        <div className="flex flex-col gap-3 landscape:flex-1">
+      </header>
+      <div className="home-layout">
+        <section className="welcome-card">
+          <Artwork name="welcome" eager sizes="(orientation: landscape) 60vw, 100vw" />
+          <div className="welcome-copy">
+            <p className="eyebrow">À VOUS DE JOUER</p>
+            <h1>Le terrain.<br />Le score.<br /><span>Le contrôle.</span></h1>
+            <p className="mt-3 text-sm leading-relaxed">Votre feuille de match,<br />toujours à portée de main.</p>
+          </div>
+        </section>
+        <section aria-label="Vos matchs" className="home-actions flex flex-col gap-3">
           {match && (
             <button
               type="button"
@@ -70,11 +77,14 @@ export function HomeScreen() {
           <Button className="min-h-14 text-lg" onClick={() => setScreen('history')}>
             <History /> Historique {archive.length > 0 && <span className="text-muted">({archive.length})</span>}
           </Button>
-        </div>
+          {lastTeams && <Button onClick={() => {useApp.getState().setDraft(d => ({ ...d, teams: structuredClone(lastTeams) })); newMatch();}}><RotateCcw /> Rejouer avec les mêmes équipes</Button>}
+          <p className="text-sm text-muted">Préparez les effectifs, puis tournez le téléphone en paysage pour arbitrer.</p>
+        </section>
       </div>
       <p className="pb-2 text-center text-xs text-muted">
         Fonctionne hors connexion · données conservées sur cet appareil uniquement
       </p>
+      {settings && <Settings onClose={() => setSettings(false)} />}
       {confirmNew && (
         <ConfirmDialog
           title="Nouveau match ?"
@@ -89,6 +99,6 @@ export function HomeScreen() {
           }}
         />
       )}
-    </div>
+    </main>
   );
 }

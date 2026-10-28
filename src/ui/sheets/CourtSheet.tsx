@@ -47,7 +47,7 @@ export function CourtSheet({ match, onClose }: { match: MatchState; onClose: () 
 
   return (
     <Sheet title="Terrain · contrôle des positions" onClose={onClose} wide>
-      <div className="grid grid-cols-2 gap-2 landscape:flex landscape:justify-center landscape:gap-0">
+      <div className="court-texture grid grid-cols-2 gap-2 landscape:flex landscape:justify-center landscape:gap-0">
         {order.map((t, k) => {
           const info = match.teams[t];
           const ts = set.teams[t];

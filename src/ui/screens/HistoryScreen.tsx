@@ -3,6 +3,7 @@ import { setsWon } from '../../engine';
 import { useApp } from '../../store/useApp';
 import { IconButton, TeamTag } from '../components/ui';
 import { SummaryScreen } from './SummaryScreen';
+import { Artwork } from '../components/Artwork';
 
 export function HistoryScreen() {
   const archive = useApp((s) => s.archive);
@@ -32,7 +33,7 @@ export function HistoryScreen() {
       </header>
       <main className="scroll-area min-h-0 flex-1 px-safe py-3 pb-safe">
         <div className="mx-auto flex max-w-2xl flex-col gap-2">
-          {archive.length === 0 && <p className="py-8 text-center text-muted">Aucun match archivé pour l'instant.</p>}
+          {archive.length === 0 && <div className="empty-state"><Artwork name="empty-matches" className="illustration-halo" /><h2 className="text-xl font-extrabold">Le prochain match ouvre l’histoire.</h2><p className="text-muted">Vos matchs terminés ou fermés apparaîtront ici.</p></div>}
           {archive.map((a, i) => {
             const m = a.state;
             const won = setsWon(m);

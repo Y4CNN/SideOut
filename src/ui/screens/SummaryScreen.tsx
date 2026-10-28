@@ -6,6 +6,7 @@ import { copyText, shareFile, shareText } from '../../lib/share';
 import { useApp } from '../../store/useApp';
 import { Button, Card, ConfirmDialog, IconButton } from '../components/ui';
 import { LogSheet } from '../sheets/LogSheet';
+import { Artwork } from '../components/Artwork';
 
 export function SummaryScreen({
   match,
@@ -66,6 +67,7 @@ export function SummaryScreen({
 
       <main className="scroll-area min-h-0 flex-1 px-safe py-3">
         <div className="mx-auto flex max-w-3xl flex-col gap-3">
+          {match.phase === 'finished' && <Artwork name="match-end" className="summary-art illustration-halo" />}
           {winner && (
             <section
               className="flex items-center gap-3 rounded-2xl p-4"
@@ -74,7 +76,7 @@ export function SummaryScreen({
               <Trophy className="size-10 shrink-0" />
               <div className="min-w-0">
                 <div className="truncate text-2xl font-black">{winner.name}</div>
-                <div className="font-semibold opacity-90">
+                <div className="font-semibold">
                   remporte le match {sum.setsWon[sum.winner!]}–{sum.setsWon[sum.winner === 'A' ? 'B' : 'A']}
                 </div>
               </div>

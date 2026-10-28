@@ -9,16 +9,21 @@ import { MatchScreen } from './ui/screens/MatchScreen';
 import { PreSetScreen } from './ui/screens/PreSetScreen';
 import { SetupScreen } from './ui/screens/SetupScreen';
 import { SummaryScreen } from './ui/screens/SummaryScreen';
+import { Onboarding } from './ui/components/Onboarding';
+import { Accessibility } from './ui/components/Accessibility';
 
 export function App() {
   const screen = useApp((s) => s.screen);
   const match = useApp((s) => s.match);
   const theme = useApp((s) => s.prefs.theme);
+  const highVisibility = useApp(s => s.prefs.highVisibility);
+  const onboardingDone = useApp(s => s.prefs.onboardingDone);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.visibility = highVisibility ? 'high' : 'normal';
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0A2A66' : '#eef1f7');
-  }, [theme]);
+  }, [theme, highVisibility]);
 
   const inGame = screen === 'game' && !!match;
   useWakeLock(inGame && match.phase !== 'finished');
@@ -30,9 +35,11 @@ export function App() {
   else if (inGame && match.phase === 'pre-set') content = <PreSetScreen key={match.sets.length} match={match} />;
   else if (inGame && match.phase === 'finished') content = <SummaryScreen match={match} />;
   else content = <HomeScreen />;
+  if (!onboardingDone && !inGame) content = <Onboarding />;
 
   return (
     <>
+      <Accessibility />
       {content}
       {inGame && <TimerOverlay />}
       {inGame && <BigAlert />}
