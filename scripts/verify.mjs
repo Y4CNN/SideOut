@@ -49,8 +49,10 @@ for (const name of ['Équipe A','Équipe B']) {
 await page.getByRole('button', {name:'Commencer le set 1',exact:true}).click();
 await page.getByRole('button', {name:/Point pour Équipe A/}).click();
 await page.getByRole('button', {name:/Point pour Équipe A \(score 1\)/}).waitFor();
-await page.getByRole('button', {name:'Annuler',exact:true}).click();
+assert.equal(await page.locator('[role="status"]').filter({hasText:/^Point Équipe A$/}).count(), 0, 'No routine point notification');
+await page.getByRole('button', {name:/^Annuler :/}).click();
 await page.getByRole('button', {name:/Point pour Équipe A \(score 0\)/}).waitFor();
+assert.equal(await page.locator('[role="status"]').filter({hasText:/^Annulé :/}).count(), 0, 'No routine undo notification');
 await page.getByRole('button', {name:'Temps mort',exact:true}).first().click();
 await page.getByRole('button', {name:'Arrêter le chrono',exact:true}).click();
 await page.getByRole('button', {name:/^Annuler :/}).click();

@@ -12,7 +12,7 @@ Commits thématiques : `c722191` (images/PWA), `e1ace4c` (joueurs/migration), `c
 - Saisie numérique en série de 1 à 99, refus immédiat des doublons. Toucher un numéro ouvre les rôles C/L et le retrait du joueur. Un seul capitaine ; limite des libéros tirée du format existant.
 - Favoris d'équipe enregistrables, rechargeables et supprimables. Rejouer avec les mêmes équipes depuis l'accueil. Préparation en trois étapes.
 - Migration des brouillons, bases de match, archives et favoris : numéros et rôles conservés, noms/prénoms retirés, anciens libellés de journal nettoyés. Réécriture du stockage et export JSON sans identités de joueurs.
-- Bouton d'annulation dans le toast de la dernière action pendant six secondes, sans risque d'annuler une ancienne action depuis un toast périmé. L'annulation utilise l'historique existant.
+- À la demande de l'utilisateur, aucune notification de confirmation pour les actions courantes du match (point, retrait/annulation, remplacement, etc.). Le bouton « Annuler » de la barre du match utilise toujours l'historique existant. Les erreurs et les alertes du moteur de règles sont conservées.
 - Contraste automatique noir/blanc pour les couleurs libres ; palette adaptée et avertissement de couleurs proches selon plusieurs approximations de déficiences de vision des couleurs. Les noms restent l'identifiant des équipes.
 - Cibles d'au moins 48 px, zoom autorisé, focus visible, focus retenu dans les dialogues puis rendu au déclencheur. Annonces du score, du serveur, des fins de temps mort et de set. Le chrono ne lit pas chaque seconde à haute voix.
 

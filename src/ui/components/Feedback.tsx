@@ -1,7 +1,6 @@
 import { ArrowLeftRight, CircleAlert, Info, TriangleAlert, CircleCheck } from 'lucide-react';
 import { useApp, type ToastKind } from '../../store/useApp';
 import { Button } from './ui';
-import { lastUndoableAction } from '../../store/history';
 
 const TOAST_STYLE: Record<ToastKind, string> = {
   info: 'bg-surface-2 text-fg border-line',
@@ -14,9 +13,6 @@ const TOAST_ICON = { info: Info, success: CircleCheck, warning: TriangleAlert, e
 
 export function Toasts() {
   const toasts = useApp((s) => s.toasts);
-  const history = useApp(s => s.history);
-  const undo = useApp(s => s.undo);
-  const dismiss = useApp(s => s.dismissToast);
   return (
     <div
       className="pointer-events-none fixed inset-x-0 top-0 z-[60] flex flex-col items-center gap-2 px-3 pt-[max(env(safe-area-inset-top),0.5rem)]"
@@ -33,7 +29,6 @@ export function Toasts() {
           >
             <Icon className="mt-0.5 size-5 shrink-0" />
             <span className="min-w-0 flex-1">{t.text}</span>
-            {t.undoAction && history && lastUndoableAction(history) === t.undoAction && <button type="button" className="pointer-events-auto min-h-12 shrink-0 rounded-lg px-2 underline" onClick={() => {undo(); dismiss(t.id);}}>Annuler</button>}
           </div>
         );
       })}

@@ -47,7 +47,6 @@ export interface Toast {
   id: number;
   kind: ToastKind;
   text: string;
-  undoAction?: Action;
 }
 
 const KEYS = {
@@ -103,7 +102,7 @@ interface AppState {
   setScreen: (s: Screen) => void;
   setDraft: (fn: (d: SetupDraft) => SetupDraft) => void;
   setPrefs: (p: Partial<Prefs>) => void;
-  toast: (kind: ToastKind, text: string, undoAction?: Action) => void;
+  toast: (kind: ToastKind, text: string) => void;
   saveFavorite: (team: Team) => void;
   removeFavorite: (name: string) => void;
   dismissToast: (id: number) => void;
@@ -181,10 +180,10 @@ export const useApp = create<AppState>((set, get) => ({
     get().toast('success', `${clean.name} : effectif enregistré.`);
   },
   removeFavorite: (name) => set({ favorites: get().favorites.filter(t => t.name !== name) }),
-  toast: (kind, text, undoAction) => {
+  toast: (kind, text) => {
     const id = ++toastId;
-    set({ toasts: [...get().toasts.slice(-1), { id, kind, text, undoAction }] });
-    const ms = undoAction || kind === 'error' || kind === 'warning' ? 6000 : 3500;
+    set({ toasts: [...get().toasts.slice(-1), { id, kind, text }] });
+    const ms = kind === 'error' || kind === 'warning' ? 6000 : 3500;
     setTimeout(() => get().dismissToast(id), ms);
   },
   dismissToast: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
@@ -204,22 +203,16 @@ export const useApp = create<AppState>((set, get) => ({
     set({ history: r.history, match: present(r.history) });
     if (input.type === 'POINT') vibrate(HAPTIC.tap);
     feedback(r.alerts, get, set);
-    if (!opts?.silent && !['TIMER_STOP', 'START_SET', 'SET_LINEUP', 'TOSS'].includes(input.type)) {
-      const action = r.history.actions.at(-1)!;
-      get().toast('info', input.type === 'POINT' ? `Point ${get().match!.teams[input.team].name}` : (undoLabel(r.history) ?? 'Action enregistrée'), action);
-    }
     return true;
   },
 
   undo: () => {
     const h = get().history;
     if (!h) return;
-    const label = undoLabel(h);
     const r = undo(h);
     if (!r) return;
     set({ history: r.history, match: present(r.history) });
     vibrate(HAPTIC.tap);
-    get().toast('info', `Annulé : ${label}`);
   },
   canUndo: () => {
     const h = get().history;
