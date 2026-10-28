@@ -12,7 +12,7 @@ Elle s'appuie sur les **Règles officielles FIVB 2025-2028** telles qu'appliqué
 
 | Domaine | Ce que fait l'application |
 | --- | --- |
-| **Préparation** | Équipes (nom, couleur principale + secondaire, contraste du texte automatique), joueurs (n° 1–99, nom, capitaine, libéros), tirage au sort, feuille de position I–VI validée (6 joueurs distincts, pas de libéro). |
+| **Préparation** | Équipes (nom, couleurs, contraste automatique), joueurs (n° 1–99 uniquement, capitaine, libéros), favoris réutilisables, tirage au sort, feuille de position I–VI validée (6 joueurs distincts, pas de libéro). |
 | **Score** | Un tap sur la zone d'une équipe = un point. Indicateur du service et du n° du serveur. Rotation automatique au side-out. Fin de set et de match automatiques (24-24, 14-14…). Changement de côté entre les sets et à 8 points au set décisif (alerte plein écran + son). |
 | **Annulation** | Bouton « Annuler » multi-niveaux sur toute action : point, rotation, remplacement, temps mort, sanction, fin de set… |
 | **Positions** | Demi-terrains vus depuis la chaise d'arbitre, avant/arrière distincts, serveur et libéro mis en évidence. Aide visuelle des contraintes de placement de l'équipe en réception (règle 2025-2028, ancienne règle activable). Fautes de position et de rotation (avec rectification de l'ordre), correction manuelle de la rotation. |
@@ -145,7 +145,7 @@ src/
 ## Compatibilité et limites connues
 
 - **Vibrations** : Android (Chrome) uniquement ; Safari iOS ne prend pas en charge l'API de vibration.
-- **Son sur iOS** : le son est activé au premier toucher de l'écran (contrainte d'iOS). Vérifiez aussi que le téléphone n'est pas en mode silencieux.
+- **Son sur iOS** : lorsque les sons sont activés dans les réglages, un premier toucher de l'écran est nécessaire pour autoriser l'audio. Vérifiez aussi que le téléphone n'est pas en mode silencieux.
 - **Écran allumé** : l'API Wake Lock dépend de la version du navigateur ; sur les versions anciennes, l'app continue sans bloquer la veille. En cas de doute, réglez le verrouillage automatique du téléphone sur « Jamais » pendant le match.
 - **Orientation** : un site web ne peut pas forcer le paysage sur iPhone. L'écran de match fonctionne aussi en portrait.
 - **Données** : tout reste sur l'appareil (localStorage). Vider les données du navigateur efface le match en cours et l'historique ; pensez à exporter les récapitulatifs importants.
@@ -154,6 +154,24 @@ src/
 
 ## Qualité
 
-- `npm test` : 68 tests sur le moteur de règles et l'annulation. Ils couvrent la rotation, les fins de set (24-24, 14-14, plafond), le set décisif et le changement de côté à 8, les remplacements légaux et illégaux, le remplacement exceptionnel, le libéro, les temps morts (y compris techniques), les sanctions, les retards, les fautes, l'équipe incomplète, l'annulation et la reprise après rechargement.
-- Rendu vérifié en paysage et en portrait sur iPhone SE, iPhone 15/16, Pixel 7, un petit Android (360 px) et en 320 px de large.
-- Lighthouse (mobile) : performance 99, accessibilité 100, bonnes pratiques 100, SEO 100. L'installabilité PWA et le fonctionnement hors ligne sont vérifiés.
+- `npm test` : 84 tests, dont les 68 tests initiaux du moteur et de l'annulation. Les nouveaux tests couvrent les numéros, doublons, rôles, migrations, export sans noms et contrastes des couleurs libres.
+- Vérifications sous Chrome sur les dimensions iPhone SE (320/375 px), iPhone 15/16, iPhone 16 Pro, Pixel et petit Android : sombre et clair, paysage et portrait, avec un contrôle supplémentaire à 200 % de texte. Voir [le rapport de livraison](reports/LIVRAISON.md).
+- Lighthouse mobile sur l'accueil : performance **100 → 98**, accessibilité **90 → 100**, bonnes pratiques **100 → 100**. Rapports JSON avant/après dans `reports/`. La catégorie PWA n'existe plus dans Lighthouse ; manifest, pré-cache et rechargement hors ligne sont contrôlés séparément.
+
+### Images, polices et vérifications mobiles
+
+```bash
+npm run images           # Sharp : variantes, icônes, écrans iOS, polices locales
+npm run build
+npm run preview -- --port 4173
+# Dans un second terminal, avec Google Chrome installé :
+npm run verify:mobile    # parcours réel : joueurs, match, annulation, cache hors ligne
+npm run audit:ui         # mises en page et axe sur les sept écrans
+npm run audit:lighthouse # mesure mobile de l'accueil
+```
+
+Les dix originaux dans `public/images/source/` sont conservés intacts et exclus du build. Le script produit 92 images (1 067 260 octets) avec un budget bloquant à 1 500 000 octets. Il utilise un SVG simple si une source manque et écrit la liste des fichiers manquants dans `reports/images.json`. Aucune source ne manque actuellement. Les AVIF/WebP sont proposés en 320, 480 et 768 px ; le PNG de repli est en 320 px. Le service worker précharge toutes ces images et les quatre fichiers WOFF2. Les licences des polices accompagnent les fichiers locaux.
+
+La présentation du premier lancement est passable et rejouable depuis les réglages. Les noms/prénoms des anciens joueurs sont retirés lors du chargement puis réécrits dans le stockage local, sans modifier leurs numéros ou rôles. Les équipes favorites sont sauvegardées sur cet appareil. Le mode haute visibilité et les sons se règlent depuis l'accueil ou le menu du match ; les sons sont désactivés par défaut pour une nouvelle installation.
+
+Les tests automatisés ne remplacent pas une validation sur iPhone/Android physiques avec VoiceOver et TalkBack, ni la vérification des écrans de démarrage iOS sur un appareil installé.

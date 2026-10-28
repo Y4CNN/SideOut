@@ -153,6 +153,7 @@ summary { min-height: 3rem; }
 .home-screen > header, .home-layout { width: 100%; max-width: 72rem; margin-inline: auto; }
 .home-screen > header { flex-wrap: wrap; }
 .match-screen { overflow-y: auto; }
+.match-screen > header > div, .match-screen > nav { flex-wrap: wrap; }
 .match-scoreboard { min-height: 12rem; }
 @media (orientation: portrait) { .match-scoreboard { min-height: 24rem; } }
 .home-layout { display: grid; gap: 1.5rem; margin-block: auto; padding-block: 1rem; }

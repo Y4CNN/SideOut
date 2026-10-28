@@ -1,0 +1,128 @@
+import { chromium } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+
+await mkdir('reports/screenshots', {recursive:true});
+const browser = await chromium.launch({channel:'chrome', headless:true});
+const context = await browser.newContext({viewport:{width:852,height:393}, deviceScaleFactor:1, isMobile:true, hasTouch:true});
+const page = await context.newPage();
+const errors = [];
+page.on('pageerror', e => errors.push(e.message));
+const result = { functional: [], views: [], offline: {}, errors };
+const url = process.env.VERIFY_URL ?? 'http://localhost:4173';
+await page.goto(url);
+await page.getByRole('button', {name:'Passer',exact:true}).click();
+await page.getByRole('button', {name:'Réglages',exact:true}).click();
+await page.getByRole('button', {name:'Revoir la présentation'}).click();
+await page.getByRole('button', {name:'Suivant',exact:true}).click();
+await page.getByRole('button', {name:'Suivant',exact:true}).click();
+await page.getByRole('button', {name:'C’est parti',exact:true}).click();
+assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('va:prefs')).onboardingDone), true);
+result.functional.push('Présentation passable, rejouable et mémorisée');
+await page.getByRole('button', {name:'Nouveau match',exact:true}).click();
+await page.getByRole('textbox', {name:'N° de maillot'}).fill('7');
+await page.getByRole('button', {name:'Ajouter',exact:true}).click();
+await page.getByRole('textbox', {name:'N° de maillot'}).fill('7');
+await page.getByRole('button', {name:'Ajouter',exact:true}).click();
+await page.getByText('Le n°7 est déjà', {exact:false}).waitFor();
+assert.equal(await page.getByRole('button', {name:/N°7, modifier/}).count(), 1);
+await page.getByRole('button', {name:/N°7, modifier/}).click();
+await page.getByRole('switch', {name:'Capitaine (C)'}).click();
+await page.getByRole('button', {name:'Terminé',exact:true}).click();
+await page.getByRole('button', {name:'Enregistrer cette équipe favorite'}).click();
+assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('va:favorites'))[0].players[0].captain), true);
+result.functional.push('Saisie en série, doublon refusé, capitaine et favoris persistés');
+// Prepare a full roster using the existing quick fill control.
+await page.getByRole('button', {name:/N°7, capitaine/}).click();
+await page.getByRole('button', {name:'Retirer le n°7',exact:true}).click();
+await page.getByRole('button', {name:'Créer les n° 1 à 12',exact:true}).click();
+await page.getByRole('button', {name:'Suivant',exact:true}).click();
+await page.getByRole('button', {name:'Créer les n° 1 à 12',exact:true}).click();
+await page.getByRole('button', {name:'Suivant',exact:true}).click();
+await page.getByRole('button', {name:'Valider · tirage au sort',exact:true}).click();
+await page.getByRole('button', {name:'Équipe A',exact:true}).nth(0).click();
+await page.getByRole('button', {name:'Équipe A',exact:true}).nth(1).click();
+for (const name of ['Équipe A','Équipe B']) {
+  const section = page.locator('section').filter({has:page.getByRole('heading',{name,exact:true})});
+  for (let i=1;i<=6;i++) await section.getByRole('button',{name:String(i),exact:true}).click();
+}
+await page.getByRole('button', {name:'Commencer le set 1',exact:true}).click();
+await page.getByRole('button', {name:/Point pour Équipe A/}).click();
+await page.getByRole('button', {name:/Point pour Équipe A \(score 1\)/}).waitFor();
+await page.getByRole('button', {name:'Annuler',exact:true}).click();
+await page.getByRole('button', {name:/Point pour Équipe A \(score 0\)/}).waitFor();
+await page.getByRole('button', {name:'Temps mort',exact:true}).first().click();
+await page.getByRole('button', {name:'Arrêter le chrono',exact:true}).click();
+await page.getByRole('button', {name:/^Annuler :/}).click();
+await page.getByRole('button', {name:'Remplacement',exact:true}).first().click();
+const sub = page.getByRole('dialog');
+await sub.getByRole('button',{name:'1 I',exact:true}).click();
+await sub.getByRole('button',{name:'7',exact:true}).click();
+await page.getByRole('button',{name:/Point pour Équipe A/}).waitFor();
+result.functional.push('Préparation complète, point/annulation, temps mort/annulation et remplacement');
+assert.equal(await page.locator('picture, img').count(), 0, 'No illustrations in live match');
+const stored = await page.evaluate(() => ({match:localStorage.getItem('va:match'),draft:localStorage.getItem('va:draft')}));
+const phones = [['SE-compact',320,568],['SE',375,667],['iPhone-15-16',393,852],['iPhone-16-Pro',402,874],['Pixel',412,915],['Android',360,640]];
+for (const [phone,w,h] of phones) for (const landscape of [true,false]) for (const theme of ['dark','light']) {
+  await page.setViewportSize({width:landscape?h:w,height:landscape?w:h});
+  await page.evaluate(({theme}) => {const prefs=JSON.parse(localStorage.getItem('va:prefs'));localStorage.setItem('va:prefs',JSON.stringify({...prefs,theme}));}, {theme});
+  await page.reload();
+  await page.getByRole('button',{name:/Point pour Équipe A/}).waitFor();
+  await page.evaluate(() => document.fonts.ready);
+  const audit = await page.evaluate(() => ({
+    overflow:document.documentElement.scrollWidth>innerWidth,
+    small:[...document.querySelectorAll('button:not(:disabled)')].map(e => ({label:e.getAttribute('aria-label')??e.textContent.trim(),r:e.getBoundingClientRect()})).filter(({r}) => r.width<47.9||r.height<47.9).map(({label,r}) => ({label,width:r.width,height:r.height})),
+    scoreButtons:[...document.querySelectorAll('button[aria-label^="Point pour"]')].map(e=>({x:e.getBoundingClientRect().x,y:e.getBoundingClientRect().y,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height})),
+  }));
+  assert.equal(audit.overflow,false, `${phone} ${theme} overflow`);
+  assert.equal(audit.small.length,0, `${phone} ${theme} undersized: ${JSON.stringify(audit.small)}`);
+  assert(audit.scoreButtons.every(b=>b.height>=48), `${phone} score touch area`);
+  if (phone==='iPhone-15-16') await page.screenshot({path:`reports/screenshots/match-${landscape?'landscape':'portrait'}-${theme}.png`});
+  result.views.push({phone,landscape,theme,...audit});
+}
+await page.setViewportSize({width:852,height:393});
+await page.getByRole('button', {name:'Menu',exact:true}).click();
+await page.getByRole('switch', {name:'Haute visibilité'}).click();
+await page.keyboard.press('Escape');
+await page.screenshot({path:'reports/screenshots/match-high-visibility.png'});
+await page.getByRole('button', {name:'Menu',exact:true}).click();
+await page.getByRole('button', {name:/^Accueil/}).click();
+await page.screenshot({path:'reports/screenshots/home-landscape.png'});
+await page.getByRole('button', {name:'Réglages',exact:true}).click();
+const dialog = page.getByRole('dialog');
+await page.keyboard.press('Shift+Tab');
+assert(await dialog.evaluate(e => e.contains(document.activeElement)), 'focus stays in dialog');
+await page.keyboard.press('Escape');
+assert.equal(await page.getByRole('button',{name:'Réglages',exact:true}).evaluate(e => e===document.activeElement),true);
+result.functional.push('Focus piégé dans le dialogue, Échap et retour au déclencheur');
+await page.getByRole('button', {name:'Réglages',exact:true}).click();
+await page.getByRole('switch', {name:'Haute visibilité'}).click();
+await page.keyboard.press('Escape');
+await page.setViewportSize({width:393,height:852});
+await page.screenshot({path:'reports/screenshots/home-portrait.png'});
+await page.evaluate(() => {document.documentElement.style.fontSize='200%';});
+assert.equal(await page.evaluate(() => document.documentElement.scrollWidth>innerWidth),false,'200% text overflow');
+await page.screenshot({path:'reports/screenshots/home-text-200.png'});
+await page.evaluate(() => {document.documentElement.style.fontSize='';});
+await page.getByRole('button', {name:'Rejouer avec les mêmes équipes'}).click();
+await page.getByRole('button', {name:'Annuler',exact:true}).click();
+// Offline must include every generated image and locally embedded font.
+await page.evaluate(async () => {await navigator.serviceWorker.ready;});
+await page.reload();
+await page.waitForFunction(() => !!navigator.serviceWorker.controller);
+const cache = await page.evaluate(async () => {
+  const keys = (await Promise.all((await caches.keys()).map(async name => (await (await caches.open(name)).keys()).map(r => r.url)))).flat();
+  return {count:keys.length,images:keys.filter(x=>/\/images\/.*\.(avif|webp|png|ico)/.test(x)).length,fonts:keys.filter(x=>x.includes('.woff2')).length,source:keys.filter(x=>x.includes('/source/'))};
+});
+assert.equal(cache.images,92); assert.equal(cache.fonts,4); assert.equal(cache.source.length,0);
+await context.setOffline(true);
+await page.reload();
+await page.getByRole('button',{name:/Point pour Équipe A/}).waitFor();
+await page.getByRole('button',{name:/Point pour Équipe B/}).click();
+assert((await page.getByRole('button',{name:/Point pour Équipe B/}).getAttribute('aria-label')).includes('score 1'));
+result.offline={...cache, reload:true,point:true};
+await context.setOffline(false);
+assert.equal(errors.length,0,errors.join('\n'));
+await writeFile('reports/verification.json',JSON.stringify({...result,matchPersisted:!!stored.match},null,2));
+await browser.close();
+console.log(JSON.stringify({functional:result.functional,views:result.views.length,offline:result.offline,errors}));

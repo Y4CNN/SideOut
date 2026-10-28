@@ -1,0 +1,524 @@
+{
+  "functional": [
+    "Présentation passable, rejouable et mémorisée",
+    "Saisie en série, doublon refusé, capitaine et favoris persistés",
+    "Préparation complète, point/annulation, temps mort/annulation et remplacement",
+    "Focus piégé dans le dialogue, Échap et retour au déclencheur"
+  ],
+  "views": [
+    {
+      "phone": "SE-compact",
+      "landscape": true,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 282,
+          "height": 118
+        },
+        {
+          "x": 286,
+          "y": 82,
+          "width": 282,
+          "height": 118
+        }
+      ]
+    },
+    {
+      "phone": "SE-compact",
+      "landscape": true,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 282,
+          "height": 118
+        },
+        {
+          "x": 286,
+          "y": 82,
+          "width": 282,
+          "height": 118
+        }
+      ]
+    },
+    {
+      "phone": "SE-compact",
+      "landscape": false,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 320,
+          "height": 134
+        },
+        {
+          "x": 0,
+          "y": 314,
+          "width": 320,
+          "height": 134
+        }
+      ]
+    },
+    {
+      "phone": "SE-compact",
+      "landscape": false,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 320,
+          "height": 134
+        },
+        {
+          "x": 0,
+          "y": 314,
+          "width": 320,
+          "height": 134
+        }
+      ]
+    },
+    {
+      "phone": "SE",
+      "landscape": true,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 331.5,
+          "height": 169
+        },
+        {
+          "x": 335.5,
+          "y": 82,
+          "width": 331.5,
+          "height": 169
+        }
+      ]
+    },
+    {
+      "phone": "SE",
+      "landscape": true,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 331.5,
+          "height": 169
+        },
+        {
+          "x": 335.5,
+          "y": 82,
+          "width": 331.5,
+          "height": 169
+        }
+      ]
+    },
+    {
+      "phone": "SE",
+      "landscape": false,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 375,
+          "height": 183.5
+        },
+        {
+          "x": 0,
+          "y": 363.5,
+          "width": 375,
+          "height": 183.5
+        }
+      ]
+    },
+    {
+      "phone": "SE",
+      "landscape": false,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 375,
+          "height": 183.5
+        },
+        {
+          "x": 0,
+          "y": 363.5,
+          "width": 375,
+          "height": 183.5
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-15-16",
+      "landscape": true,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 424,
+          "height": 187
+        },
+        {
+          "x": 428,
+          "y": 82,
+          "width": 424,
+          "height": 187
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-15-16",
+      "landscape": true,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 424,
+          "height": 187
+        },
+        {
+          "x": 428,
+          "y": 82,
+          "width": 424,
+          "height": 187
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-15-16",
+      "landscape": false,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 393,
+          "height": 276
+        },
+        {
+          "x": 0,
+          "y": 456,
+          "width": 393,
+          "height": 276
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-15-16",
+      "landscape": false,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 393,
+          "height": 276
+        },
+        {
+          "x": 0,
+          "y": 456,
+          "width": 393,
+          "height": 276
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-16-Pro",
+      "landscape": true,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 435,
+          "height": 196
+        },
+        {
+          "x": 439,
+          "y": 82,
+          "width": 435,
+          "height": 196
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-16-Pro",
+      "landscape": true,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 435,
+          "height": 196
+        },
+        {
+          "x": 439,
+          "y": 82,
+          "width": 435,
+          "height": 196
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-16-Pro",
+      "landscape": false,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 402,
+          "height": 287
+        },
+        {
+          "x": 0,
+          "y": 467,
+          "width": 402,
+          "height": 287
+        }
+      ]
+    },
+    {
+      "phone": "iPhone-16-Pro",
+      "landscape": false,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 402,
+          "height": 287
+        },
+        {
+          "x": 0,
+          "y": 467,
+          "width": 402,
+          "height": 287
+        }
+      ]
+    },
+    {
+      "phone": "Pixel",
+      "landscape": true,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 455.5,
+          "height": 206
+        },
+        {
+          "x": 459.5,
+          "y": 82,
+          "width": 455.5,
+          "height": 206
+        }
+      ]
+    },
+    {
+      "phone": "Pixel",
+      "landscape": true,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 455.5,
+          "height": 206
+        },
+        {
+          "x": 459.5,
+          "y": 82,
+          "width": 455.5,
+          "height": 206
+        }
+      ]
+    },
+    {
+      "phone": "Pixel",
+      "landscape": false,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 412,
+          "height": 307.5
+        },
+        {
+          "x": 0,
+          "y": 487.5,
+          "width": 412,
+          "height": 307.5
+        }
+      ]
+    },
+    {
+      "phone": "Pixel",
+      "landscape": false,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 412,
+          "height": 307.5
+        },
+        {
+          "x": 0,
+          "y": 487.5,
+          "width": 412,
+          "height": 307.5
+        }
+      ]
+    },
+    {
+      "phone": "Android",
+      "landscape": true,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 318,
+          "height": 154
+        },
+        {
+          "x": 322,
+          "y": 82,
+          "width": 318,
+          "height": 154
+        }
+      ]
+    },
+    {
+      "phone": "Android",
+      "landscape": true,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 318,
+          "height": 154
+        },
+        {
+          "x": 322,
+          "y": 82,
+          "width": 318,
+          "height": 154
+        }
+      ]
+    },
+    {
+      "phone": "Android",
+      "landscape": false,
+      "theme": "dark",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 360,
+          "height": 170
+        },
+        {
+          "x": 0,
+          "y": 350,
+          "width": 360,
+          "height": 170
+        }
+      ]
+    },
+    {
+      "phone": "Android",
+      "landscape": false,
+      "theme": "light",
+      "overflow": false,
+      "small": [],
+      "scoreButtons": [
+        {
+          "x": 0,
+          "y": 82,
+          "width": 360,
+          "height": 170
+        },
+        {
+          "x": 0,
+          "y": 350,
+          "width": 360,
+          "height": 170
+        }
+      ]
+    }
+  ],
+  "offline": {
+    "count": 101,
+    "images": 92,
+    "fonts": 4,
+    "source": [],
+    "reload": true,
+    "point": true
+  },
+  "errors": [],
+  "matchPersisted": true
+}
