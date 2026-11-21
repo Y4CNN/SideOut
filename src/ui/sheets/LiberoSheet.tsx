@@ -24,7 +24,8 @@ export function LiberoSheet({ match, team, onClose }: { match: MatchState; team:
   const all = liberos(match, team);
   const able = ableLiberos(match, team);
   const [libero, setLibero] = useState<number | null>(able.find((n) => n !== ts.libero?.libero) ?? null);
-  const [reason, setReason] = useState<string | null>(null);
+  const toast = useApp(s => s.toast);
+  const showReason = (text: string) => toast('warning', text);
   const [unable, setUnable] = useState<number | null>(null);
   const [newLibero, setNewLibero] = useState<number | null>(null);
   const [confirm, setConfirm] = useState(false);
@@ -64,7 +65,7 @@ export function LiberoSheet({ match, team, onClose }: { match: MatchState; team:
           <Button
             variant="primary"
             className="mt-3 w-full"
-            onClick={() => (outError ? setReason(outError) : run(dispatch({ type: 'LIBERO_OUT', team })))}
+            onClick={() => (outError ? showReason(outError) : run(dispatch({ type: 'LIBERO_OUT', team })))}
           >
             Sortie du libéro : retour du n°{onCourt.replaced}
           </Button>
@@ -76,7 +77,7 @@ export function LiberoSheet({ match, team, onClose }: { match: MatchState; team:
                 <Button
                   key={n}
                   className={`mt-2 w-full ${err ? 'opacity-50' : ''}`}
-                  onClick={() => (err ? setReason(err) : run(dispatch({ type: 'LIBERO_SWAP', team, libero: n })))}
+                  onClick={() => (err ? showReason(err) : run(dispatch({ type: 'LIBERO_SWAP', team, libero: n })))}
                 >
                   Échange libéro / libéro : n°{n} remplace n°{onCourt.libero}
                 </Button>
@@ -115,7 +116,7 @@ export function LiberoSheet({ match, team, onClose }: { match: MatchState; team:
                     key={i}
                     type="button"
                     aria-disabled={!!err}
-                    onClick={() => (err ? setReason(err) : run(dispatch({ type: 'LIBERO_IN', team, libero: libero!, replaced: n })))}
+                    onClick={() => (err ? showReason(err) : run(dispatch({ type: 'LIBERO_IN', team, libero: libero!, replaced: n })))}
                     className={`tap flex min-h-16 flex-col items-center justify-center rounded-xl border-2 font-black ${
                       err ? 'border-line bg-surface-2 opacity-40' : 'border-ok bg-ok/15'
                     }`}
@@ -130,22 +131,20 @@ export function LiberoSheet({ match, team, onClose }: { match: MatchState; team:
         )
       )}
 
-      {reason && (
-        <p className="mt-3 rounded-xl bg-warn/15 p-3 text-sm font-semibold text-warn" role="alert">
-          {reason}
-        </p>
-      )}
-
-      <div className="mt-4 rounded-xl bg-surface-2 p-3 text-sm text-muted">
-        <p>• Remplacements libéro illimités et non décomptés dans les {match.config.substitutionsPerSet} remplacements.</p>
-        <p>• Uniquement en ligne arrière ; le libéro ne sert pas.</p>
-        <p>• Un échange doit avoir eu lieu entre deux remplacements libéro.</p>
-        <p>• Le libéro ne peut être remplacé que par le joueur qu'il a remplacé.</p>
-      </div>
+      <details className="mt-3 rounded-xl bg-surface-2 px-3 text-sm">
+        <summary className="cursor-pointer py-3 font-semibold">Comment ça marche ?</summary>
+        <div className="space-y-2 pb-3 text-muted">
+          <p>Déclarez vos libéros (L) dans l’effectif avant le match.</p>
+          <p>Entrée : choisissez le libéro, puis le joueur arrière qu’il remplace. Sortie : touchez « Retour du n°… ».</p>
+          <p>Le tiret — indique qu’aucun libéro n’est enregistré sur le terrain.</p>
+          <p>Ces échanges ne comptent pas dans les {match.config.substitutionsPerSet} remplacements. Un échange de jeu doit les séparer.</p>
+          <p>Le libéro reste en ligne arrière et ne sert pas. L’application signale sa sortie nécessaire.</p>
+        </div>
+      </details>
 
       {all.length > 0 && (
-        <section className="mt-5">
-          <h3 className="mb-2 font-bold">Libéro inapte / re-désignation</h3>
+        <details className="mt-2">
+          <summary className="cursor-pointer py-3 text-sm font-semibold text-muted">Libéro inapte / re-désignation</summary>
           <div className="flex flex-wrap gap-2">
             {all.map((n) => {
               const already = match.liberosUnable[team].includes(n);
@@ -198,7 +197,7 @@ export function LiberoSheet({ match, team, onClose }: { match: MatchState; team:
               </Button>
             </>
           )}
-        </section>
+        </details>
       )}
 
       {confirm && unable !== null && (

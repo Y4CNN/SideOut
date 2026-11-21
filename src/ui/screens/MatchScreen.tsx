@@ -1,9 +1,8 @@
-import { Ellipsis, Eye, LayoutGrid, Menu, ScrollText, Undo2 } from 'lucide-react';
+import { ArrowLeftRight, Ellipsis, Eye, LayoutGrid, Menu, ScrollText, Undo2 } from 'lucide-react';
 import { useState } from 'react';
 import {
   leftTeam as leftTeamOf,
   liberoMustLeave,
-  liberos,
   other,
   playersToReplace,
   regularSubsUsed,
@@ -14,6 +13,8 @@ import {
 import { teamStyle } from '../../lib/color';
 import { useApp } from '../../store/useApp';
 import { HalfCourt } from '../components/HalfCourt';
+import { SidePlacement } from '../components/SidePlacement';
+import { Sheet } from '../components/ui';
 import { formatElapsed, useNow } from '../hooks';
 import { CourtSheet } from '../sheets/CourtSheet';
 import { LiberoSheet } from '../sheets/LiberoSheet';
@@ -29,6 +30,7 @@ export type SheetState =
   | { kind: 'court' }
   | { kind: 'log' }
   | { kind: 'menu' }
+  | { kind: 'sides' }
   | null;
 
 export function MatchScreen({ match }: { match: MatchState }) {
@@ -57,6 +59,9 @@ export function MatchScreen({ match }: { match: MatchState }) {
           </span>
           <span className="tabular text-muted">{formatElapsed(now - set.startedAt)}</span>
         </div>
+        <button type="button" onClick={() => setSheet({ kind: 'sides' })} className="tap flex size-12 items-center justify-center" aria-label="Placement des équipes">
+          <ArrowLeftRight />
+        </button>
         <button type="button" onClick={() => setSheet({ kind: 'log' })} className="tap flex size-11 items-center justify-center" aria-label="Journal">
           <ScrollText />
         </button>
@@ -106,6 +111,7 @@ export function MatchScreen({ match }: { match: MatchState }) {
       {sheet?.kind === 'sanction' && <SanctionSheet match={match} initialTeam={sheet.team} onClose={close} />}
       {sheet?.kind === 'court' && <CourtSheet match={match} onClose={close} />}
       {sheet?.kind === 'log' && <LogSheet match={match} onClose={close} />}
+      {sheet?.kind === 'sides' && <Sheet title="Placement des équipes" onClose={close}><SidePlacement match={match} /></Sheet>}
       {sheet?.kind === 'menu' && <MenuSheet match={match} onClose={close} onOpenLog={() => setSheet({ kind: 'log' })} />}
     </div>
   );
@@ -163,7 +169,6 @@ function TeamPanel({
   const won = setsWon(match)[team];
   const mustLeave = liberoMustLeave(set, team);
   const toReplace = playersToReplace(match, team);
-  const hasLibero = liberos(match, team).length > 0;
   const tmMax = match.config.timeoutsPerSet;
   const subMax = match.config.substitutionsPerSet;
   const subs = regularSubsUsed(ts);
@@ -289,7 +294,6 @@ function TeamPanel({
         />
         <PanelButton
           soft={soft}
-          disabled={!hasLibero}
           onClick={() => openSheet({ kind: 'libero', team })}
           label="Libéro"
           short="Libéro"

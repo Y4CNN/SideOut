@@ -34,14 +34,14 @@ export function nextSetSetup(state: MatchState): NextSetSetup {
   const deciding = isDecidingSet(state.config, number);
   if (needsToss(state)) {
     const toss = state.prep.toss;
-    return { number, deciding, firstServe: toss?.firstServe ?? null, leftTeam: toss?.leftTeam ?? null };
+    return { number, deciding, firstServe: toss?.firstServe ?? null, leftTeam: state.prep.leftTeam ?? toss?.leftTeam ?? null };
   }
   const prev = lastSet(state)!;
   return {
     number,
     deciding,
     firstServe: other(prev.firstServe),
-    leftTeam: state.config.switchSidesBetweenSets ? other(prev.leftTeam) : prev.leftTeam,
+    leftTeam: state.prep.leftTeam ?? (state.config.switchSidesBetweenSets ? other(prev.leftTeam) : prev.leftTeam),
   };
 }
 

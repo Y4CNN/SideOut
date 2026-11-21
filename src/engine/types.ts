@@ -143,7 +143,7 @@ export interface MatchState {
   phase: MatchPhase;
   sets: SetState[];
   /** Préparation du prochain set (tirage au sort, feuilles de position). */
-  prep: { toss: Toss | null; lineups: Record<TeamId, Court | null> };
+  prep: { toss: Toss | null; lineups: Record<TeamId, Court | null>; leftTeam?: TeamId };
   sanctions: SanctionRecord[];
   improperRequests: Record<TeamId, number>;
   /** Joueurs disqualifiés (reste du match). */
@@ -167,6 +167,7 @@ export type SanctionAction = Exclude<SanctionKind, 'delay-warning' | 'delay-pena
 
 export type Action =
   | { type: 'TOSS'; firstServe: TeamId; leftTeam: TeamId; at: number }
+  | { type: 'SET_SIDES'; leftTeam: TeamId; at: number }
   | { type: 'SET_LINEUP'; team: TeamId; lineup: Court; at: number }
   | { type: 'START_SET'; at: number }
   | { type: 'POINT'; team: TeamId; at: number }

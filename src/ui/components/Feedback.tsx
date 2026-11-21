@@ -25,7 +25,8 @@ export function Toasts() {
           <div
             key={t.id}
             role="status"
-            className={`animate-sheet flex w-full max-w-md items-start gap-2 rounded-xl border px-3 py-2 text-left text-[15px] font-semibold shadow-xl ${TOAST_STYLE[t.kind]}`}
+            className={`flex w-full max-w-md items-start gap-2 rounded-xl border px-3 py-2 text-left text-[15px] font-semibold shadow-xl ${TOAST_STYLE[t.kind]}`}
+            style={{ animation: `toast-in 160ms ease-out, toast-out 200ms ease-in ${t.duration}ms forwards` }}
           >
             <Icon className="mt-0.5 size-5 shrink-0" />
             <span className="min-w-0 flex-1">{t.text}</span>

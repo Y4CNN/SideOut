@@ -47,6 +47,7 @@ export interface Toast {
   id: number;
   kind: ToastKind;
   text: string;
+  duration: number;
 }
 
 const KEYS = {
@@ -182,9 +183,9 @@ export const useApp = create<AppState>((set, get) => ({
   removeFavorite: (name) => set({ favorites: get().favorites.filter(t => t.name !== name) }),
   toast: (kind, text) => {
     const id = ++toastId;
-    set({ toasts: [...get().toasts.slice(-1), { id, kind, text }] });
-    const ms = kind === 'error' || kind === 'warning' ? 6000 : 3500;
-    setTimeout(() => get().dismissToast(id), ms);
+    const duration = kind === 'error' || kind === 'warning' ? 4000 : 3000;
+    set({ toasts: [{ id, kind, text, duration }] });
+    setTimeout(() => get().dismissToast(id), duration + 200);
   },
   dismissToast: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
   clearBigAlert: () => set({ bigAlert: null }),

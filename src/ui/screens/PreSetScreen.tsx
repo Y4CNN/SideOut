@@ -17,6 +17,7 @@ import { HAPTIC, vibrate } from '../../lib/haptics';
 import { textOn } from '../../lib/color';
 import { useApp } from '../../store/useApp';
 import { HalfCourt } from '../components/HalfCourt';
+import { SidePlacement } from '../components/SidePlacement';
 import { Button, Card, IconButton, TeamButton, TeamTag } from '../components/ui';
 import { formatCountdown, useNow } from '../hooks';
 import { MenuSheet } from '../sheets/MenuSheet';
@@ -104,10 +105,7 @@ export function PreSetScreen({ match }: { match: MatchState }) {
                 Service : <TeamTag name={match.teams[setup.firstServe!].name} color={match.teams[setup.firstServe!].color} />{' '}
                 <span className="text-muted">(n'a pas servi en premier au set précédent)</span>
               </p>
-              <p className="mt-2 text-[15px]">
-                À gauche : <TeamTag name={match.teams[setup.leftTeam!].name} color={match.teams[setup.leftTeam!].color} />
-                {match.config.switchSidesBetweenSets && <span className="text-muted"> (changement de côté)</span>}
-              </p>
+              <div className="mt-2"><SidePlacement match={match} /></div>
             </Card>
           )}
 
@@ -200,13 +198,13 @@ function TossCard({ match }: { match: MatchState }) {
   const dispatch = useApp((s) => s.dispatch);
   const toss = match.prep.toss;
   const [serve, setServe] = useState<TeamId | null>(toss?.firstServe ?? null);
-  const [left, setLeft] = useState<TeamId | null>(toss?.leftTeam ?? null);
+  const left = nextSetSetup(match).leftTeam;
   const [coin, setCoin] = useState<string | null>(null);
 
   const update = (s: TeamId | null, l: TeamId | null) => {
     setServe(s);
-    setLeft(l);
     if (s && l) dispatch({ type: 'TOSS', firstServe: s, leftTeam: l });
+    else if (l) dispatch({ type: 'SET_SIDES', leftTeam: l });
   };
 
   const flip = () => {

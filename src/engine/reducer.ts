@@ -317,12 +317,26 @@ function handle(d: D, a: Action, alerts: Alert[]) {
     case 'TOSS': {
       if (d.phase !== 'pre-set' || !needsToss(d as MatchState)) fail("Aucun tirage au sort n'est prévu à ce stade.");
       d.prep.toss = { firstServe: a.firstServe, leftTeam: a.leftTeam };
+      delete d.prep.leftTeam;
       log(
         d,
         a.at,
         'toss',
         `Tirage au sort (set ${d.sets.length + 1}) : service ${name(d, a.firstServe)}, ${name(d, a.leftTeam)} à gauche`,
       );
+      return;
+    }
+
+    case 'SET_SIDES': {
+      if (d.phase === 'pre-set') {
+        d.prep.leftTeam = a.leftTeam;
+        if (d.prep.toss) d.prep.toss.leftTeam = a.leftTeam;
+      } else {
+        const set = cur(d);
+        // A placement correction must preserve the deciding-set switch marker.
+        set.leftTeam = set.switched ? other(a.leftTeam) : a.leftTeam;
+      }
+      log(d, a.at, 'side-switch', `Correction des côtés : ${name(d, a.leftTeam)} à gauche`);
       return;
     }
 

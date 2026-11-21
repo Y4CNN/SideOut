@@ -5,6 +5,7 @@ import { shareText } from '../../lib/share';
 import { useApp } from '../../store/useApp';
 import { Button, ConfirmDialog, Segmented, Sheet, TeamButton, Toggle } from '../components/ui';
 import { LogSheet } from './LogSheet';
+import { SidePlacement } from '../components/SidePlacement';
 
 function Item({ icon, label, hint, onClick, danger }: { icon: ReactNode; label: string; hint?: string; onClick: () => void; danger?: boolean }) {
   return (
@@ -45,6 +46,7 @@ export function MenuSheet({ match, onClose, onOpenLog }: { match: MatchState; on
 
   return (
     <Sheet title="Menu" onClose={onClose}>
+      {match.phase !== 'finished' && <div className="mb-3 border-b border-line pb-3"><SidePlacement match={match} /></div>}
       <div className="flex flex-col gap-1">
         <Item icon={<ScrollText />} label="Journal du match" onClick={() => (onOpenLog ? onOpenLog() : setLog(true))} />
         <Item icon={<Share2 />} label="Partager le récapitulatif provisoire" onClick={share} />

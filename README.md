@@ -35,6 +35,7 @@ npm run dev        # serveur de développement (http://localhost:5173, accessibl
 npm test           # tests unitaires du moteur de règles (Vitest)
 npm run build      # build de production dans dist/
 npm run preview    # sert le build de production localement
+npm run verify:arbitrage # contrôle les nouveaux parcours dans Chrome (preview lancé)
 ```
 
 > 💡 Pour tester sur téléphone pendant le développement, ouvrez l'adresse « Network » affichée par `npm run dev`. Le service worker (hors ligne) et le maintien de l'écran allumé exigent **HTTPS** : ils ne fonctionnent pas sur une adresse IP locale en HTTP. Pour un essai réaliste, déployez l'application (voir ci-dessous), c'est gratuit.
@@ -94,6 +95,9 @@ Une fois installée, l'application s'ouvre en plein écran et fonctionne sans r�
 4. **Pendant le set** (téléphone en paysage) :
    - un tap sur la zone d'une équipe donne le point, et **Annuler** corrige toute erreur ;
    - **TM / Rempl. / Libéro** : boutons en bas de chaque zone ;
+   - **Rempl.** : choisissez le sortant et l’entrant dans l’ordre voulu, puis **Valider** ; **Enchaîner** garde le panneau ouvert ;
+   - l’icône **Placement des équipes** permet d’inverser les côtés ; ce réglage est aussi accessible dans le menu avant chaque set ;
+   - **Libéro** conserve le tiret lorsqu’aucun libéro n’est enregistré sur le terrain ; l’aide **Comment ça marche ?** explique les entrées et sorties ;
    - **Positions** affiche la rotation dans chaque zone ; **Terrain** ouvre le contrôle détaillé (contraintes, fautes, correction) ;
    - **Sanctions** (cartons) et **Plus** (journal, fin de set forcée, équipe incomplète, préférences).
 5. **Entre les sets** : chrono d'intervalle, nouvelles feuilles de position, nouveau tirage avant le set décisif.
